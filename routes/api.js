@@ -1,53 +1,42 @@
-/*
-*
-*
-*       Complete the API routing below
-*       
-*       
-*/
-
 'use strict';
 
-var expect = require('chai').expect;
-var MongoClient = require('mongodb').MongoClient;
-var ObjectId = require('mongodb').ObjectId;
-const MONGODB_CONNECTION_STRING = process.env.DB;
-//Example connection: MongoClient.connect(MONGODB_CONNECTION_STRING, function(err, db) {});
+const MongoClient = require( 'mongodb' );
+const ObjectId    = require( 'mongodb' ).ObjectID;
+const xssFilters  = require( 'xss-filters' );
 
-module.exports = function (app) {
+const DB_URI      = process.env.DB;
+const ENDPOINT    = '/api/books';
 
-  app.route('/api/books')
-    .get(function (req, res){
-      //response will be array of book objects
-      //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
-    })
-    
-    .post(function (req, res){
-      var title = req.body.title;
-      //response will contain new book object including atleast _id and title
-    })
-    
-    .delete(function(req, res){
-      //if successful response will be 'complete delete successful'
-    });
+module.exports = ( app ) => {
 
+  app.get( ENDPOINT, ( req,res ) => {
+    //response will be array of book objects
+    //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
+  } );
 
+  app.post( ENDPOINT, ( req,res ) => {
+    const title = req.body.title;
+    //response will contain new book object including atleast _id and title
+  } );
 
-  app.route('/api/books/:id')
-    .get(function (req, res){
-      var bookid = req.params.id;
-      //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
-    })
-    
-    .post(function(req, res){
-      var bookid = req.params.id;
-      var comment = req.body.comment;
-      //json res format same as .get
-    })
-    
-    .delete(function(req, res){
-      var bookid = req.params.id;
-      //if successful response will be 'delete successful'
-    });
-  
-};
+  app.delete( ENDPOINT, ( req,res ) => {
+    //if successful response will be 'complete delete successful'
+  } );
+
+  app.get( `${ENDPOINT}/:id`, ( req,res ) => {
+    const bookid = req.params.id;
+    //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
+  } );
+
+  app.post( `${ENDPOINT}/:id`, ( req,res ) => {
+    const bookid = req.params.id;
+    const comment = req.body.comment;
+    //json res format same as .get
+  } );
+
+  app.delete( `${ENDPOINT}/:id`, ( req,res ) => {
+    const bookid = req.params.id;
+    //if successful response will be 'delete successful'
+  } );
+
+}
