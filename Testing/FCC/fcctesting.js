@@ -29,7 +29,7 @@
 
 var cors = require('cors');
 var fs = require('fs');
-var runner = require('../test-runner');
+var runner = require('./test-runner');
 
 module.exports = function (app) {
 
@@ -44,7 +44,7 @@ module.exports = function (app) {
   app.route('/_api/routes/api.js')
     .get(function(req, res, next) {
       console.log('requested');
-      fs.readFile(__dirname + '/routes/api.js', function(err, data) {
+      fs.readFile(__dirname + '/App/routes.js', function(err, data) {
         if(err) return next(err);
         res.type('txt').send(data.toString());
       });

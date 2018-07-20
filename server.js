@@ -5,14 +5,14 @@ const cors        = require( 'cors' );
 const helmet      = require( 'helmet' );
 const dotEnv      = require( 'dotenv' ).config( );
 
-const apiRoutes   = require( './routes/api.js' );
-const fccTesting  = require( './routes/fcctesting.js' );
-const runner      = require( './test-runner' );
+const apiRoutes   = require( './App/routes' );
+const fccTesting  = require( './Testing/FCC/fcctesting' );
+const runner      = require( './Testing/FCC/test-runner' );
 
 const app  = express( );
 const PORT = process.env.PORT || 3000;
 
-app.use( '/static', express.static( 'public' ) );
+app.use( '/assets', express.static( 'App/Views/Assets' ) );
 app.use( cors( { origin: '*' } ) ); //For FCC testing purposes only
 app.use( express.urlencoded( { extended: true } ) );
 app.use( helmet( {
@@ -23,7 +23,7 @@ app.use( helmet( {
 
 // Index page (static HTML).
 app.get( '/', ( req,res ) => {
-  res.sendFile( process.cwd( ) + '/views/index.html' );
+  res.sendFile( process.cwd( ) + '/App/Views/index.html' );
 } );
 
 fccTesting( app ); // For FCC testing purposes.
@@ -49,7 +49,7 @@ app.listen( PORT, ( ) => {
         console.log( 'Tests are not valid:' );
         console.log( error );
       }
-    }, 3500 );
+    }, 1500 );
   }
 } );
 

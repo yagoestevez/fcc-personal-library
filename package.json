@@ -12,7 +12,8 @@
 	"version": "0.1.01",
 	"main": "server.js",
 	"scripts": {
-		"start": "node server.js"
+		"start": "nodemon server.js",
+		"test": "./node_modules/.bin/mocha -u tdd tests"
 	},
 	"dependencies": {
 		"chai": "^3.5.0",
