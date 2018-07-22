@@ -13,7 +13,7 @@
 	"main": "Main.js",
 	"scripts": {
 		"start": "nodemon Main.js",
-		"test": "./node_modules/.bin/mocha -u tdd tests"
+		"test": "./node_modules/.bin/mocha -u tdd Testing"
 	},
 	"dependencies": {
 		"chai": "^3.5.0",

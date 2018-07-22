@@ -1,86 +1,148 @@
-/*
-*
-*
-*       FILL IN EACH FUNCTIONAL TEST BELOW COMPLETELY
-*       -----[Keep the tests in the same order!]-----
-*       
-*/
+const chaiHttp  = require( 'chai-http' );
+const chai      = require( 'chai' );
+const expect    = chai.expect;
+const server    = require( '../Main' );
 
-var chaiHttp = require('chai-http');
-var chai = require('chai');
-var assert = chai.assert;
-var server = require('../Main');
+chai.use( chaiHttp );
 
-chai.use(chaiHttp);
+const ENDPOINT = '/api/books';
 
-suite('Functional Tests', function() {
+suite( 'Functional Tests', ( ) => {
 
-  /*
-  * ----[EXAMPLE TEST]----
-  * Each test should completely test the response of the API end-point including response status code!
-  */
-  test('#example Test GET /api/books', function(done){
-     chai.request(server)
-      .get('/api/books')
-      .end(function(err, res){
-        assert.equal(res.status, 200);
-        assert.isArray(res.body, 'response should be an array');
-        assert.property(res.body[0], 'commentcount', 'Books in array should contain commentcount');
-        assert.property(res.body[0], 'title', 'Books in array should contain title');
-        assert.property(res.body[0], '_id', 'Books in array should contain _id');
-        done();
-      });
-  });
-  /*
-  * ----[END of EXAMPLE TEST]----
-  */
+  let firstInsertedID; // Used to store the first inserted ID and use it later in the PUT tests.
 
-  suite('Routing tests', function() {
+  test( '#example Test GET /api/books', done => {
+     chai.request( server )
+      .get( ENDPOINT )
+      .end( ( err,res ) => {
+        expect( res.status ).to.equal( 200 );
+        expect( res.body, 'response should be an array' )
+                .to.be.an( 'array' );
+        expect( res.body[0], 'Books in array should contain commentcount' )
+                .to.have.property( 'commentcount' );
+        expect( res.body[0], 'Books in array should contain title' )
+                .to.have.property( 'title' );
+        expect( res.body[0], 'Books in array should contain _id' )
+                .to.have.property( '_id' );
+        done( );
+      } );
+  } );
 
+  suite( 'Routing tests', ( ) => {
 
-    suite('POST /api/books with title => create book object/expect book object', function() {
+    suite( 'POST /api/books with title => create book object/expect book object', ( ) => {
       
-      test('Test POST /api/books with title', function(done) {
-        //done();
-      });
-      
-      test('Test POST /api/books with no title given', function(done) {
-        //done();
-      });
-      
-    });
+      test( 'Test POST /api/books with title', done => {
+        chai.request( server )
+          .post( ENDPOINT )
+          .set( 'content-type', 'application/x-www-form-urlencoded' )
+          .send( {
+            title : 'Test book'
+          } )
+          .end( ( err,res ) => {
+            expect( res.status ).to.equal( 200 );
+            expect( res.body, 'response should have an _id' )
+                    .to.have.property( '_id' );
+            expect( res.body, 'response should have a title' )
+                    .to.have.property( 'title' )
+                    .to.equal( 'Test book' );
+            firstInsertedID = res.body._id;
+            done( );
+          } )
+      } );
 
+      test( 'Test POST /api/books with no title given', done => {
+        chai.request( server )
+          .post( ENDPOINT )
+          .set( 'content-type', 'application/x-www-form-urlencoded' )
+          .send( { } )
+          .end( ( err,res ) => {
+            expect( res.status ).to.equal( 200 );
+            expect( res.text, 'response should be "every book should have a name"' )
+                    .to.equal( 'every book should have a name' );
+            done( );
+          } )
+      } );
 
-    suite('GET /api/books => array of books', function(){
-      
-      test('Test GET /api/books',  function(done){
-        //done();
-      });      
-      
-    });
+    } );
 
-
-    suite('GET /api/books/[id] => book object with [id]', function(){
+    suite( 'GET /api/books => array of books', ( ) => {
       
-      test('Test GET /api/books/[id] with id not in db',  function(done){
-        //done();
-      });
+      test( 'Test GET /api/books', done => {
+        chai.request( server )
+          .get( ENDPOINT )
+          .set( 'content-type', 'application/x-www-form-urlencoded' )
+          .query( { } )
+          .end( ( err,res ) => {
+            expect( res.status ).to.equal( 200 );
+            expect( res.body, 'response should be an array' ).is.an( 'array' );
+            done( );
+          } )
+      } );      
       
-      test('Test GET /api/books/[id] with valid id in db',  function(done){
-        //done();
-      });
+    } );
+
+    suite( 'GET /api/books/[id] => book object with [id]', ( ) => {
       
-    });
-
-
-    suite('POST /api/books/[id] => add comment/expect book object with id', function(){
+      test( 'Test GET /api/books/[id] with id not in db', done => {
+        chai.request( server )
+          .get( `${ENDPOINT}/B4D_1D3NT1F13R` )
+          .set( 'content-type', 'application/x-www-form-urlencoded' )
+          .query( { } )
+          .end( ( err,res ) => {
+            expect( res.status ).to.equal( 200 );
+            expect( res.text, 'response text should be "no book exists"' )
+                    .to.equal( 'no book exists' );
+            done( );
+          } )
+      } );
       
-      test('Test POST /api/books/[id] with comment', function(done){
-        //done();
-      });
+      test( 'Test GET /api/books/[id] with valid id in db', done => {
+        chai.request( server )
+          .get( `${ENDPOINT}/${firstInsertedID}` )
+          .set( 'content-type', 'application/x-www-form-urlencoded' )
+          .query( { } )
+          .end( ( err,res ) => {
+            expect( res.status ).to.equal( 200 );
+            expect( res.body, 'response should have an _id' )
+                    .to.have.property( '_id' );
+            expect( res.body, 'response should have a title to equal "Test book"' )
+                    .to.have.property( 'title' )
+                    .to.equal( 'Test book' );
+            expect( res.body, 'response should have an array property named "comments"' )
+                    .to.have.property( 'comments' )
+                    .to.be.an( 'array' );
+            done( );
+          } )
+      } );
       
-    });
+    } );
 
-  });
+    suite( 'POST /api/books/[id] => add comment/expect book object with id', ( ) => {
+      
+      test( 'Test POST /api/books/[id] with comment', done => {
+        chai.request( server )
+          .post( `${ENDPOINT}/${firstInsertedID}` )
+          .set( 'content-type', 'application/x-www-form-urlencoded' )
+          .send( { comment: 'Test comments' } )
+          .end( ( err,res ) => {
+            expect( res.status ).to.equal( 200 );
+            expect( res.body, 'response should have an _id' )
+                    .to.have.property( '_id' );
+            expect( res.body, 'response should have a title to equal "Test book"' )
+                    .to.have.property( 'title' )
+                    .to.equal( 'Test book' );
+            expect( res.body, 'response should have an array property named "comments"' )
+                    .to.have.property( 'comments' )
+                    .to.be.an( 'array' );
+            expect( res.body.comments[res.body.comments.length-1], 'response\'s last comments should equal "Test comments"' )
+                    .to.equal( 'Test comments' );
+            done( );
+          } );
+      } );
+      
+    } );
 
-});
+  } );
+
+} );

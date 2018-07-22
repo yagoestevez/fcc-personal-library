@@ -14,13 +14,6 @@ To test the app, just run ```npm test``` (after ```npm i```, of course).
 
 ##### User Stories
 
-1. ADD YOUR MongoDB connection string to .env without quotes as db ```example: DB=mongodb://admin:pass@1234.mlab.com:1234/fccpersonallib```
-2. SET NODE_ENV to `test` without quotes
-3. You need to create all routes within ```routes/api.js```
-4. You will add any security features to ```server.js```
-5. You will create all of the functional tests in ```tests/2_functional-tests.js```
----
-##### More User Stories
 1. Nothing from my website will be cached in my client as a security measure.
 2. I will see that the site is powered by 'PHP 4.2.0' even though it isn't as a security measure.
 3. I can post a title to /api/books to add a book and returned will be the object with the title and a unique _id.
