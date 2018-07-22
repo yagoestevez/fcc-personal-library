@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+html(lang="en")
+  head
+    meta( charset="UTF-8" )
+    meta( http-equiv="X-UA-Compatible", content="ie=edge" )
+    meta( name="viewport",   content="width=device-width, initial-scale=1.0" )
+    meta( name="author"      content="Yago Estévez" )
+    meta( name="description" content="A project for freeCodeCamp certification" )
+    meta( name="keywords"    content="freecodecamp, nodejs, node, express, javascript, mongodb, mongoose" )
+    link( rel="stylesheet"   href="/assets/main.css" )
+    link( rel="stylesheet"   href="/assets/bootstrap-4.1.2.min.css" )
+    link( rel="stylesheet"   href="https://fonts.googleapis.com/css?family=Markazi+Text" )
+    title Personal Library by Yago Estévez
+  body.text-center
+    #main.container-fluid
+      .row.pb-5
+        .col-12.col-md-3.col-lg-4
+        .col-12.col-md-6.col-lg-4
+          img( src="https://d33wubrfki0l68.cloudfront.net/4ba4ee4d1ac4caf5c0c3fa44ccc8fddd5bd11222/3f5b1/img/freecodecamp-alternative.png" alt="FreeCodeCamp Logo" )
+          h1.mt-3.mb-3.font-weight-normal Personal Library
+
+          .card
+            .card-header.bg-primary.text-white Add a new book to the library
+            .card-body
+              form#new-book-form.form( method="post" action="/api/books" )
+                .input-group
+                  input#new-book-input.form-control( type="text" placeholder="Book title" required autofocus )
+                  .input-group-append
+                    button.add-book-btn.btn.btn-primary( type="button") Add Book!
+        .col-12.col-md-3.col-lg-4
+
+      .row.mt-5.p-4.bg-light
+        .col-12
+          if books.length === 0
+            h3.text-center You don't have any book saved yet.
+          else
+            h3.text-center List of books in your library
+
+      .row#books-list.px-4.pt-0.bg-light
+        each book in books
+          .col-12.col-md-6.col-lg-4.col-xl-4.pb-5
+            .card.mb-4.h-100
+              .card-header.bg-secondary.text-white #{book.title}
+              - var DELETE_URI = "/api/books/" + book._id;
+              form.form.h-100( method="post" action=DELETE_URI )
+                if book.comments.length === 0
+                  .card-body.p-0.text-left
+                    ul.list-group.list-group-flush
+                      li.list-group-item No reviews at the moment.
+                else
+                  .card-body.p-0.text-left
+                    ul.list-group.list-group-flush
+                    each review in book.comments
+                      li.list-group-item= review
+                .input-group
+                  input#review-text.form-control( type="text" placeholder="Write a review" )
+                  .input-group-append
+                    button.add-review-btn.btn.btn-outline-primary(
+                      type="submit"
+                      data-id=''+book._id
+                    ) Add Review
+                button.del-book-btn.btn.btn-outline-danger.mt-3.w-100(
+                  type="button"
+                  data-id=''+book._id
+                ) Delete Book
+      if books.length > 0
+        button.del-all-books-btn.btn.btn-danger.my-5(
+          type="button"
+        ) <b>Careful!</b> This button will destroy the whole list.
+
+
+      footer
+        p.mt-4.mb-2 by 
+          a( href="https://twitter.com/yagoestevez" target="_blank" ) Yago Estévez
+    script( src="/assets/jquery-3.3.1.min.js" )
+    script( src="/assets/main.js" )

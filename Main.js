@@ -3,15 +3,18 @@
 const express     = require( 'express' );
 const cors        = require( 'cors' );
 const helmet      = require( 'helmet' );
-const dotEnv      = require( 'dotenv' ).config( );
+const pug         = require( 'pug' );
+require( 'dotenv' ).config( );
 
-const apiRoutes   = require( './App/routes' );
+const routes      = require( './App/routes' );
 const fccTesting  = require( './Testing/FCC/fcctesting' );
 const runner      = require( './Testing/FCC/test-runner' );
 
 const app  = express( );
 const PORT = process.env.PORT || 3000;
 
+app.set( 'view engine', 'pug' );
+app.set( 'views', './App/Views' );
 app.use( '/assets', express.static( 'App/Views/Assets' ) );
 app.use( cors( { origin: '*' } ) ); //For FCC testing purposes only
 app.use( express.urlencoded( { extended: true } ) );
@@ -21,15 +24,11 @@ app.use( helmet( {
   xssFilter     : true,
 } ) );
 
-// Index page (static HTML).
-app.get( '/', ( req,res ) => {
-  res.sendFile( process.cwd( ) + '/App/Views/index.html' );
-} );
-
 fccTesting( app ); // For FCC testing purposes.
 
-apiRoutes( app );
-    
+// Router
+app.use( routes );
+
 // 404 Not Found Middleware.
 app.use( ( req,res,next ) => {
   res.status( 404 )
@@ -39,16 +38,15 @@ app.use( ( req,res,next ) => {
 
 // Start the server and testing suite.
 app.listen( PORT, ( ) => {
-  console.log( "Listening on port " + PORT );
+  const GREEN_BG = '\x1b[42m\x1b[30m';
+  const RED_TEXT = '\x1b[31m';
+  const RESET    = '\x1b[0m'; 
+  console.log( `${GREEN_BG}%s${RESET}`, ` :: Listening on port ${PORT} :: ` );
   if ( process.env.NODE_ENV === 'test' ) {
-    console.log( 'Running Tests...' );
+    console.log( `${RED_TEXT}%s${RESET}`, `------> Running Tests ------->` );
     setTimeout( ( ) => {
-      try {
-        runner.run( );
-      } catch( error ) {
-        console.log( 'Tests are not valid:' );
-        console.log( error );
-      }
+      try            { runner.run( ); }
+      catch( error ) { console.log( `Tests are not valid:\n ${error}` ); }
     }, 1500 );
   }
 } );

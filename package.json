@@ -10,9 +10,9 @@
 	"license": "MIT",
 	"name": "yagoestevez-fcc-adv-node-projects",
 	"version": "0.1.01",
-	"main": "server.js",
+	"main": "Main.js",
 	"scripts": {
-		"start": "nodemon server.js",
+		"start": "nodemon Main.js",
 		"test": "./node_modules/.bin/mocha -u tdd tests"
 	},
 	"dependencies": {
@@ -24,7 +24,9 @@
 		"helmet": "^3.12.1",
 		"mocha": "^5.2.0",
 		"mongodb": "^2.2.16",
+		"mongoose": "^5.2.4",
 		"nodemon": "^1.18.3",
+		"pug": "^2.0.3",
 		"xss-filters": "^1.2.7",
 		"zombie": "^6.1.2"
 	},

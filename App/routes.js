@@ -1,42 +1,29 @@
 'use strict';
 
-const MongoClient = require( 'mongodb' );
-const ObjectId    = require( 'mongodb' ).ObjectID;
-const xssFilters  = require( 'xss-filters' );
+const express = require( 'express' );
+const router  = express.Router();
+const Library = require( './Controllers/Library' );
 
-const DB_URI      = process.env.DB;
-const ENDPOINT    = '/api/books';
+const ROOT    = '/';
+const API     = '/api/books';
+const library = new Library( );
 
-module.exports = ( app ) => {
+// View main entrypoint.
+router.get( ROOT, ( req,res ) => {
+  library.getAllBooksJSON( res ).then( books => res.render( 'index', { books } ) )
+} );
 
-  app.get( ENDPOINT, ( req,res ) => {
-    //response will be array of book objects
-    //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
-  } );
+// API entrypoints.
+router.get( API, ( req,res ) => library.getAllBooks( res ) );
+router.get( `${API}/:id`, ( req,res ) => library.getBookByID( req.params.id, res ) );
 
-  app.post( ENDPOINT, ( req,res ) => {
-    const title = req.body.title;
-    //response will contain new book object including atleast _id and title
-  } );
+router.post( API, ( req,res ) => library.addOneBook( req.body.title, res ) );
+router.post( `${API}/:id`, ( req,res ) => {
+  library.addBookReview( req.params.id, req.body.comment, res )
+} );
 
-  app.delete( ENDPOINT, ( req,res ) => {
-    //if successful response will be 'complete delete successful'
-  } );
+router.delete( API, ( req,res ) => library.deleteAllBooks( res ) );
+router.delete( `${API}/:id`, ( req,res ) => library.deleteBookByID( req.params.id, res ) );
 
-  app.get( `${ENDPOINT}/:id`, ( req,res ) => {
-    const bookid = req.params.id;
-    //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
-  } );
 
-  app.post( `${ENDPOINT}/:id`, ( req,res ) => {
-    const bookid = req.params.id;
-    const comment = req.body.comment;
-    //json res format same as .get
-  } );
-
-  app.delete( `${ENDPOINT}/:id`, ( req,res ) => {
-    const bookid = req.params.id;
-    //if successful response will be 'delete successful'
-  } );
-
-}
+module.exports = router;
