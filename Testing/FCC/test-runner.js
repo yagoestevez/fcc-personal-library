@@ -33,8 +33,7 @@ var Mocha = require('mocha'),
     path = require('path');
 
 var mocha = new Mocha();
-var testDir = '../'
-
+var testDir = __dirname + '/../';
 
 // Add each .js file to the mocha instance
 fs.readdirSync(testDir).filter(function(file){
@@ -65,8 +64,8 @@ emitter.run = function() {
           title: test.title,
           context: context.slice(0, -separator.length),
           state: test.state,
-          // body: body,
-          assertions: analyser(body)
+          body: body,
+          // assertions: analyser(body)
         };
         tests.push(obj);
     })
